@@ -1,8 +1,6 @@
 #!/bin/bash
-
 # volume setup
 vgchange -ay
-
 DEVICE_FS=`blkid -o value -s TYPE ${DEVICE}`
 if [ "`echo -n $DEVICE_FS`" == "" ] ; then 
   # wait for the device to be attached
@@ -23,25 +21,22 @@ fi
 mkdir -p /var/lib/jenkins
 echo '/dev/data/volume1 /var/lib/jenkins ext4 defaults 0 0' >> /etc/fstab
 mount /var/lib/jenkins
-
 # install dependencies
 #apt-get install -y python3
 amazon-linux-extras install -y java-openjdk11 awscli1
-
 # jenkins repository
 wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
 rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
-
 # install jenkins
 yum update -y
 yum install -y jenkins
 systemctl enable --now jenkins
-
+# install git
+yum install -y git
 # install terraform
 yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
 yum -y install terraform
 cp /usr/bin/terraform /usr/local/bin/
-
 # install packer
 yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
 yum -y install packer
